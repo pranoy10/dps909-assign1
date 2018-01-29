@@ -1,3 +1,5 @@
+/*https://scotch.io/tutorials/test-a-node-restful-api-with-mocha-and-chai*/
+
 var chai = require('chai'),
 	chaiHttp = require('chai-http'), 
 	prototype = require('./prototype.js'), 
