@@ -58,3 +58,8 @@ function returnNumbers(stringArr, response){
 
 	return rmDuplicates;
 }
+
+/*
+https://stackoverflow.com/questions/33986863/mocha-api-testing-getting-typeerror-app-address-is-not-a-function
+*/
+module.exports = app;
