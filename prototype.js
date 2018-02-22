@@ -5,13 +5,11 @@ var express = require('express'),
 	upload = multer({dest: 'uploads/'}),
 	fs = require('fs'),
 	PNF = require('google-libphonenumber'),
-	phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
-	var mammoth = require("mammoth");
-
-	
+	phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance(),
+	mammoth = require("mammoth"),
+	pdf_extract = require('pdf-extract');	
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
-
 
 app.listen(3000, ()=>{
 	console.log('Listening on PORT 3000');
@@ -28,15 +26,20 @@ app.get('/', (request, response) => {
 		response.status(200).send('Everything seems to be working! ' + text);
     })
     .done();
-	
 });
 
 
 app.get('/api/phonenumbers/parse/text/:string', function(request, response) {
 	var stringArr = [];
 	stringArr.push(request.params.string);
-	var finalOutput = returnNumbers(stringArr, response);
-	response.send(finalOutput);
+	let newnumber = stringArr;
+		for(var i =0;i<newnumber.length;i++){
+			var a = newnumber[i].split(',');
+			console.log(a);
+			var finalOutput = returnNumbers(a, response);
+			response.send(finalOutput);
+		}
+	
 });
 
 //https://www.npmjs.com/package/multer
@@ -71,11 +74,6 @@ function returnNumbers(stringArr, response){
 
 	return rmDuplicates;
 }
-
-
-
-
-
 
 /*
 https://stackoverflow.com/questions/33986863/mocha-api-testing-getting-typeerror-app-address-is-not-a-function
