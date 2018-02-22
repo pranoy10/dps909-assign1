@@ -5,13 +5,12 @@ var express = require('express'),
 	upload = multer({dest: 'uploads/'}),
 	fs = require('fs'),
 	PNF = require('google-libphonenumber'),
-	phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
-	var mammoth = require("mammoth");
+	pdfText = require('pdf-text'),
+  mammoth = require("mammoth"),
+  phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
-	
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
-
 
 app.listen(3000, ()=>{
 	console.log('Listening on PORT 3000');
@@ -40,13 +39,29 @@ app.get('/api/phonenumbers/parse/text/:string', function(request, response) {
 });
 
 //https://www.npmjs.com/package/multer
+//https://www.npmjs.com/package/pdf-text
+//reads if type pdf then outputs to the screen
 app.post('/api/phonenumbers/parse/file', upload.single('file'), function(require, response){
+	
+	if(require.file.originalname.match(/.*.pdf/)){
+		var pString = require.file.path;
+		pdfText(pString, function(err,data){
+			var string = data.toString('ascii'),
+			text = new Buffer(string, 'base64').toString('ascii'),
+			stringArr = text.split('\n'),
+			finalOutput = returnNumbers(stringArr, response);
+			response.send(finalOutput);			
+			console.log(data); //print text     
+	  	});
+	}
+	else{
 	var buffer = fs.readFileSync(require.file.path),
 		string = buffer.toString('ascii'),
 		text = new Buffer(string, 'base64').toString('ascii'),
 		stringArr = text.split('\n'),
 		finalOutput = returnNumbers(stringArr, response);
 		response.send(finalOutput);
+	}
 });
 
 //uses npm package
